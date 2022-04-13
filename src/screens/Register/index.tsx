@@ -1,16 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../../components/forms/Button';
 
 import { Input } from '../../components/forms/Input';
+import { TransactionTypeButton } from '../../components/forms/TransactionTypeButton';
 import { 
     Container,
     Header,
     Title,
     Form,
-    Fields
+    Fields,
+    TransactionTypes
 } from './styles';
 
 export function Register() {
+    const [transactionType, setTransactionType] = useState('');
+
+    /** the creation of a method called handle... is a common pattern.
+     * Someone might set the property directly on the onPress event, but I use
+     * the pattern with handle....
+      */
+    function handleTransactionType(type: 'up' | 'down') {
+        setTransactionType(type);
+    }
+
     return (
         <Container>
             <Header>
@@ -25,6 +37,21 @@ export function Register() {
                     <Input 
                         placeholder='Preço'
                     />
+
+                    <TransactionTypes>
+                        <TransactionTypeButton 
+                            title='income'
+                            type='up'
+                            onPress={() => handleTransactionType('up')}
+                            isActive={transactionType === 'up'}
+                        />
+                        <TransactionTypeButton 
+                            title='expense'
+                            type='down'
+                            onPress={() => handleTransactionType('down')}
+                            isActive={transactionType === 'down'}
+                        />
+                    </TransactionTypes>
                 </Fields>
 
                 <Button title='Enviar'/>
