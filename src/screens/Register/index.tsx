@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { Modal } from 'react-native';
+
 import { Button } from '../../components/forms/Button';
-import { CategorySelect } from '../../components/forms/CategorySelect';
+import { CategorySelectButton } from '../../components/forms/CategorySelectButton';
 
 import { Input } from '../../components/forms/Input';
 import { TransactionTypeButton } from '../../components/forms/TransactionTypeButton';
+import { CategorySelect } from '../CategorySelect';
 import { 
     Container,
     Header,
@@ -15,6 +18,12 @@ import {
 
 export function Register() {
     const [transactionType, setTransactionType] = useState('');
+    const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+
+    const [category, setCategory] = useState({
+        key: 'category',
+        name: 'Categoria'
+    });
 
     /** the creation of a method called handle... is a common pattern.
      * Someone might set the property directly on the onPress event, but I use
@@ -22,6 +31,14 @@ export function Register() {
       */
     function handleTransactionType(type: 'up' | 'down') {
         setTransactionType(type);
+    }
+
+    function handleCloseSelectCategoryModal() {
+        setCategoryModalOpen(false);
+    }
+
+    function handleOpenSelectCategoryModal() {
+        setCategoryModalOpen(true);
     }
 
     return (
@@ -54,11 +71,22 @@ export function Register() {
                         />
                     </TransactionTypes>
 
-                    <CategorySelect title='Categoria'/>
+                    <CategorySelectButton 
+                        title={category.name}
+                        onPress={handleOpenSelectCategoryModal}
+                    />
                 </Fields>
 
                 <Button title='Enviar'/>
             </Form>
+
+            <Modal visible={categoryModalOpen}>
+                <CategorySelect 
+                    category={category}
+                    setCategory={setCategory}
+                    closeSelectCategory={handleCloseSelectCategoryModal}
+                />
+            </Modal>
 
         </Container>
 
