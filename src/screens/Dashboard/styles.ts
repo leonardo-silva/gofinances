@@ -5,6 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { getBottomSpace, getStatusBarHeight } from "react-native-iphone-x-helper";
 
 import { DataListProps } from ".";
+import { BorderlessButton } from "react-native-gesture-handler";
 
 export const Container = styled.View`
     flex: 1;
@@ -19,6 +20,13 @@ export const Header = styled.View`
     align-items: flex-start;
     justify-content: center;
 `;
+
+export const Icon = styled(Feather)`
+    color: ${({ theme }) => theme.colors.secondary};
+    font-size: ${RFValue(24)}px;
+`;
+
+export const LogoutButton = styled(BorderlessButton)``;
 
 export const UserWrapper = styled.View`
     width: 100%;
@@ -58,11 +66,6 @@ export const UserName = styled.Text`
     font-size: ${RFValue(18)}px;
     line-height: ${RFValue(24)}px;
     font-family: ${({ theme }) => theme.fonts.bold};
-`;
-
-export const Icon = styled(Feather)`
-    color: ${({ theme }) => theme.colors.secondary};
-    font-size: ${RFValue(24)}px;
 `;
 
 export const HighlightCards = styled.ScrollView.attrs({

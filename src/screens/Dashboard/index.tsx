@@ -12,6 +12,7 @@ import {
     UserGreeting,
     UserName,
     Icon,
+    LogoutButton,
     UserWrapper,
     HighlightCards,
     Transactions,
@@ -72,7 +73,9 @@ export function Dashboard() {
                         </User>
                     </UserInfo>
 
-                    <Icon name="power"/>
+                    <LogoutButton>
+                        <Icon name="power"/>
+                    </LogoutButton>
 
                 </UserWrapper>    
             </Header>
