@@ -88,7 +88,13 @@ export function Register() {
 
         //console.log(data);
         try {
-            await AsyncStorage.setItem(dataKey, JSON.stringify(data));
+            const currentData = await AsyncStorage.getItem(dataKey);
+            const formattedData = currentData ? JSON.parse(currentData) : [];
+            const newData = [
+                ...formattedData,
+                data
+            ];
+            await AsyncStorage.setItem(dataKey, JSON.stringify(newData));
             
         } catch (error) {
             console.log(error);
@@ -105,6 +111,12 @@ export function Register() {
         }
 
         load();
+
+        // If necessary to clear, remove itens, do this:
+        // async function removeAll() {
+        //     await AsyncStorage.removeItem(dataKey);
+        // }
+        // removeAll();
     }, []);
 
     return (
