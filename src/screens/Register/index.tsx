@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState } from 'react';
 import { Alert, Keyboard, Modal, TouchableWithoutFeedback } from 'react-native';
+
+import { useForm } from 'react-hook-form';
+import {
+    useNavigation,
+    NavigationProp,
+    ParamListBase,
+} from "@react-navigation/native";
 
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import uuid from 'react-native-uuid';
 
 import { Button } from '../../components/forms/Button';
 import { CategorySelectButton } from '../../components/forms/CategorySelectButton';
@@ -49,12 +56,15 @@ export function Register() {
     const {
         control,
         handleSubmit,
+        reset,
         formState: { errors }
     } = useForm({
         resolver: yupResolver(schema)
     });
 
     const dataKey = '@gofinances:transactions';
+
+    const { navigate }: NavigationProp<ParamListBase> = useNavigation();
 
     /** the creation of a method called handle... is a common pattern.
      * Someone might set the property directly on the onPress event, but I use
@@ -72,6 +82,16 @@ export function Register() {
         setCategoryModalOpen(true);
     }
 
+    function resetFields() {
+        reset();  // from hook-form, for form fields
+        setTransactionType('');
+        setCategory({
+            key: 'category',
+            name: 'Categoria'
+        });
+        setCategoryModalOpen(false);
+    }
+
     async function handleRegister(form: FormData) {
         if (! transactionType)
             return Alert.alert('Selecione o tipo da transação');
@@ -80,10 +100,12 @@ export function Register() {
             return Alert.alert('Selecione a categoria');
     
         const data = {
+            id: String(uuid.v4()),
             name: form.name,
             amount: form.amount,
             transactionType,
-            category: category.key
+            category: category.key,
+            date: new Date()
         }
 
         //console.log(data);
@@ -94,14 +116,20 @@ export function Register() {
                 ...formattedData,
                 data
             ];
+
             await AsyncStorage.setItem(dataKey, JSON.stringify(newData));
             
+            resetFields();
+            
+            navigate('Listagem');
+
         } catch (error) {
             console.log(error);
             Alert.alert('Não foi possível salvar os dados!');
         }
     }
 
+    /*
     useEffect (() => {
         async function load() {
             const transactions = await AsyncStorage.getItem(dataKey);
@@ -118,6 +146,7 @@ export function Register() {
         // }
         // removeAll();
     }, []);
+    */
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -183,3 +212,4 @@ export function Register() {
         </TouchableWithoutFeedback>
     );
 }
+
