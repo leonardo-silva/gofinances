@@ -26,6 +26,12 @@ export const Icon = styled(Feather)`
     font-size: ${RFValue(24)}px;
 `;
 
+export const LoadContainer = styled.View`
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+`;
+
 export const LogoutButton = styled(BorderlessButton)``;
 
 export const UserWrapper = styled.View`
