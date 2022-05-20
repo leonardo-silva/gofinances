@@ -103,7 +103,7 @@ export function Register() {
             id: String(uuid.v4()),
             name: form.name,
             amount: form.amount,
-            transactionType,
+            type: transactionType,
             category: category.key,
             date: new Date()
         }
@@ -128,26 +128,24 @@ export function Register() {
             Alert.alert('Não foi possível salvar os dados!');
         }
     }
+    
+    // useEffect (() => {
+    //     // async function load() {
+    //     //     const transactions = await AsyncStorage.getItem(dataKey);
+    //     //     console.log(transactions);
+    //     //     if (transactions)
+    //     //         console.log(JSON.parse(transactions));
+    //     // }
 
-    /*
-    useEffect (() => {
-        async function load() {
-            const transactions = await AsyncStorage.getItem(dataKey);
-            console.log(transactions);
-            if (transactions)
-                console.log(JSON.parse(transactions));
-        }
+    //     // load();
 
-        load();
-
-        // If necessary to clear, remove itens, do this:
-        // async function removeAll() {
-        //     await AsyncStorage.removeItem(dataKey);
-        // }
-        // removeAll();
-    }, []);
-    */
-
+    //     // If necessary to clear, remove itens, do this:
+    //     async function removeAll() {
+    //         await AsyncStorage.removeItem(dataKey);
+    //     }
+    //     removeAll();
+    // }, []);
+ 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <Container>
