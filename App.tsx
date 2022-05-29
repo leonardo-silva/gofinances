@@ -20,6 +20,7 @@ import { AppRoutes } from './src/routes/app.routes';
 
 import theme from './src/global/styles/theme';
 import { SignIn } from './src/screens/SignIn';
+import { AuthProvider } from './src/hooks/auth';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -36,7 +37,9 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <NavigationContainer>
         <StatusBar style='light'/>
-        <SignIn />
+        <AuthProvider>
+          <SignIn />
+        </AuthProvider>  
       </NavigationContainer>
     </ThemeProvider>
   );
