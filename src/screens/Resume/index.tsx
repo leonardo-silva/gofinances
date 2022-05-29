@@ -1,14 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+
+import { RFValue } from 'react-native-responsive-fontsize';
+import { useTheme } from 'styled-components';
+import { addMonths, subMonths, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 import { VictoryPie } from 'victory-native';
 
 import { HistoryCard } from '../../components/HistoryCard';
 
-import { ChartContainer, Container, Content, Header, Title } from './styles';
+import { 
+    ChartContainer, 
+    Container, 
+    Content, 
+    Header, 
+    Title,
+    MonthSelect,
+    MonthSelectButton,
+    Month,
+    MonthSelectIcon,
+    LoadContainer,
+} from './styles';
+
 import { categories } from '../../utils/categories';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useTheme } from 'styled-components';
+import { ActivityIndicator } from 'react-native';
 
 export interface TransactionData {
     type: 'up' | 'down';
@@ -28,9 +45,21 @@ interface CategoryTotalData {
 }
 
 export function Resume() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const [totalByCategories, setTotalByCategories] = useState<CategoryTotalData[]>([]);
 
     const theme = useTheme();
+
+    function handleDateChange(action: 'next' | 'prev') {
+        setIsLoading(true);
+
+        if (action === 'next') {
+            setSelectedDate(addMonths(selectedDate,1));
+        } else {
+            setSelectedDate(subMonths(selectedDate,1));
+        }
+    }
 
     async function loadData() {
         const dataKey = '@gofinances:transactions';
@@ -43,7 +72,11 @@ export function Resume() {
         }
 
         const expenses = formattedStorageData
-        .filter((expense: TransactionData) => expense.type === 'down'); 
+        .filter((expense: TransactionData) => 
+            expense.type === 'down' &&
+            new Date(expense.date).getMonth() === selectedDate.getMonth() &&
+            new Date(expense.date).getFullYear() === selectedDate.getFullYear()
+        ); 
 
         const expensesTotal = expenses
         .reduce((accumulator: number, expense: TransactionData) => {
@@ -78,11 +111,13 @@ export function Resume() {
         });
 
         setTotalByCategories(totalByCategory);
+
+        setIsLoading(false);
     }
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [selectedDate]);
 
     return (
         <Container>
@@ -90,34 +125,63 @@ export function Resume() {
                 <Title>Resumo por Categoria</Title>
             </Header>
 
-            <Content>
-                <ChartContainer>
-                    <VictoryPie
-                        data={totalByCategories}
-                        colorScale={totalByCategories.map(category => category.color)}
-                        style={{
-                            labels: {
-                                fontSize: RFValue(18),
-                                fontWeight: 'bold',
-                                fill: theme.colors.shape
-                            }
-                        }}
-                        labelRadius={50}
-                        x="percentage"
-                        y="total"
+            {   isLoading 
+                ? <LoadContainer>
+                    <ActivityIndicator
+                        color={theme.colors.primary}
+                        size="large"
                     />
-                </ChartContainer>
+                </LoadContainer> 
+                :
+                <Content
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ 
+                        paddingHorizontal: 24,
+                        paddingBottom: useBottomTabBarHeight() 
+                    }}
+                >
+                    <MonthSelect>
+                        <MonthSelectButton onPress={() => handleDateChange('prev')} >
+                            <MonthSelectIcon name='chevron-left' />
+                        </MonthSelectButton>
 
-                {
-                    totalByCategories.map(item => (
-                        <HistoryCard 
-                            key={item.key}
-                            title={item.name}
-                            amount={item.formattedTotal}
-                            color={item.color} />
-                    ))
-                }
-            </Content>
+                        <Month>
+                            {format(selectedDate, 'MMMM, yyyy', { locale: ptBR })}
+                        </Month>
+
+                        <MonthSelectButton onPress={() => handleDateChange('next')} >
+                            <MonthSelectIcon name='chevron-right' />
+                        </MonthSelectButton>
+                    </MonthSelect>
+
+                    <ChartContainer>
+                        <VictoryPie
+                            data={totalByCategories}
+                            colorScale={totalByCategories.map(category => category.color)}
+                            style={{
+                                labels: {
+                                    fontSize: RFValue(18),
+                                    fontWeight: 'bold',
+                                    fill: theme.colors.shape
+                                }
+                            }}
+                            labelRadius={50}
+                            x="percentage"
+                            y="total"
+                        />
+                    </ChartContainer>
+
+                    {
+                        totalByCategories.map(item => (
+                            <HistoryCard 
+                                key={item.key}
+                                title={item.name}
+                                amount={item.formattedTotal}
+                                color={item.color} />
+                        ))
+                    }
+                </Content>
+            }    
         </Container>
     );
 }
