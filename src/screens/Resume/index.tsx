@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
@@ -26,6 +26,7 @@ import {
 
 import { categories } from '../../utils/categories';
 import { ActivityIndicator } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 export interface TransactionData {
     type: 'up' | 'down';
@@ -45,15 +46,13 @@ interface CategoryTotalData {
 }
 
 export function Resume() {
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [totalByCategories, setTotalByCategories] = useState<CategoryTotalData[]>([]);
 
     const theme = useTheme();
 
     function handleDateChange(action: 'next' | 'prev') {
-        setIsLoading(true);
-
         if (action === 'next') {
             setSelectedDate(addMonths(selectedDate,1));
         } else {
@@ -62,6 +61,8 @@ export function Resume() {
     }
 
     async function loadData() {
+        setIsLoading(true);
+
         const dataKey = '@gofinances:transactions';
         const storageData = await AsyncStorage.getItem(dataKey);
         const formattedStorageData = storageData ? JSON.parse(storageData) : [];
@@ -115,14 +116,14 @@ export function Resume() {
         setIsLoading(false);
     }
 
-    useEffect(() => {
+    useFocusEffect(useCallback(() => {
         loadData();
-    }, [selectedDate]);
+    }, [selectedDate]));
 
     return (
         <Container>
             <Header>
-                <Title>Resumo por Categoria</Title>
+                <Title>Despesas por Categoria</Title>
             </Header>
 
             {   isLoading 
@@ -165,7 +166,7 @@ export function Resume() {
                                     fill: theme.colors.shape
                                 }
                             }}
-                            labelRadius={50}
+                            labelRadius={70}
                             x="percentage"
                             y="total"
                         />
