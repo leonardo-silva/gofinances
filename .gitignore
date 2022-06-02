@@ -56,3 +56,6 @@ dist/
 
 # Docs
 docprivate/
+
+# Environment variables
+.env
