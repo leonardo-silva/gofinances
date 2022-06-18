@@ -10,6 +10,7 @@ import { ptBR } from 'date-fns/locale';
 import { VictoryPie } from 'victory-native';
 
 import { HistoryCard } from '../../components/HistoryCard';
+import { useAuth } from '../../hooks/auth';
 
 import { 
     ChartContainer, 
@@ -52,6 +53,8 @@ export function Resume() {
 
     const theme = useTheme();
 
+    const { user } = useAuth();
+
     function handleDateChange(action: 'next' | 'prev') {
         if (action === 'next') {
             setSelectedDate(addMonths(selectedDate,1));
@@ -63,7 +66,7 @@ export function Resume() {
     async function loadData() {
         setIsLoading(true);
 
-        const dataKey = '@gofinances:transactions';
+        const dataKey = `@gofinances:transactions_user:${user.id}`;
         const storageData = await AsyncStorage.getItem(dataKey);
         const formattedStorageData = storageData ? JSON.parse(storageData) : [];
 
