@@ -25,6 +25,8 @@ import {
 import { ActivityIndicator } from "react-native";
 import { useTheme } from "styled-components";
 
+import { useAuth } from '../../hooks/auth';
+
 export interface DataListProps extends TransactionCardProps {
     id: string
 } 
@@ -46,6 +48,8 @@ export function Dashboard() {
     const [highlightData, setHighlightData] = useState<HighlightData>({} as HighlightData);
 
     const theme = useTheme();
+
+    const { signOut, user } = useAuth();
 
     function getLastTransactionFormattedDate(
         collection: DataListProps[], 
@@ -155,14 +159,14 @@ export function Dashboard() {
                 <Header>
                     <UserWrapper>
                         <UserInfo>
-                            <Photo source={{ uri: 'https://github.com/leonardo-silva.png'}}/>
+                            <Photo source={{ uri: user.photo }}/>
                             <User>
                                 <UserGreeting>Hi, </UserGreeting>
-                                <UserName>Leonardo</UserName>
+                                <UserName>{user.name}</UserName>
                             </User>
                         </UserInfo>
 
-                        <LogoutButton>
+                        <LogoutButton onPress={signOut}>
                             <Icon name="power"/>
                         </LogoutButton>
 
